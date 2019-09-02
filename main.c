@@ -4,48 +4,65 @@
 
 #include "mui.h"
 
-extern int cmd_help(int argc, char *argv[]);
-extern int cmd_question(int argc, char *argv[]);
-extern int cmd_input(int argc, char *argv[]);
 
-struct command commands[] = {
-	{
-		"question",
-		cmd_question,
-		"display question dialog",
-		"Usage: mui question"
-		""
-		"Display a question with two possible answers: Yes or No."
-		""
-		"It returns exit code zero with \"Yes\" and nonzero with \"No\"."
-		""
-
-	},
-	{
-		"input",
-		cmd_input,
-		"display text input dialog",
-		"Usage: mui input"
-		""
-		"Display a question that require a string as the answer."
-		""
-		"On exit, the input string will be printed on stdout."
-		""
-
-	}
+struct command cmd_question = {
+	"question",
+	run_question,
+	"display question dialog",
+	"Usage: mui question"
+	""
+	"Display a question with two possible answers: Yes or No."
+	""
+	"It returns exit code zero with \"Yes\" and nonzero with \"No\"."
+	""
 };
+
+struct command cmd_input = {
+	"input",
+	run_input,
+	"display text input dialog",
+	"Usage: mui input"
+	""
+	"Display a question that require a string as the answer."
+	""
+	"On exit, the input string will be printed on stdout."
+	""
+};
+
+/* NULL-terminated list of pointers to commands: */
+struct command **commands = NULL;
+
+void
+register_command(struct command *c) {
+	int i;
+	if (commands==NULL) {
+		commands = realloc(commands, 2*sizeof(struct command));
+		i=0;
+	} else {
+		for (i=0; commands[i]; i++);
+		commands = realloc(commands, (i+2)*sizeof(struct command));
+	}
+	commands[i] = c;
+}
+
+void
+register_all_commands(void) {
+	register_command(&cmd_question);
+	register_command(&cmd_input);
+}
 
 int
 main(int argc, char *argv[]) {
 	int i;
 	argc--; argv++;
 
+	register_all_commands();
 	if (argc < 1 || !strcmp(argv[0], "help")) {
-		return cmd_help(argc-1, argv+1);
+		return run_help(argc-1, argv+1);
 	}
-	for (i=0; i<sizeof(commands)/sizeof(struct command); i++) {
-		if (!strcmp(argv[0], commands[i].name)) {
-			return commands[i].run(argc-1, argv+1);
+	for (i=0; commands[i]; i++) {
+		if (!strcmp(argv[0], commands[i]->name)) {
+			return commands[i]->run(argc-1, argv+1);
 		}
 	}
 	fprintf(stderr, "mui %s: unknown command\n", argv[0]);
