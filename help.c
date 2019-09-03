@@ -4,7 +4,7 @@
 #include "mui.h"
 
 int
-run_help(int argc, char *argv[]) {
+help(int argc, char *argv[]) {
 	int i;
 	FILE *output = stdout;
 
@@ -29,9 +29,10 @@ run_help(int argc, char *argv[]) {
 	}
 	for (i=0; commands[i]; i++) {
 		if (!strcmp(argv[0], commands[i]->name)) {
+			printf("%s\n", commands[i]->long_usage);
+			return 0;
 		}
-		return 0;
 	}
-	fprintf(stderr, "mui help %s %s: unknown help topic. Run 'mui help'.\n", argv[0], argv[1]);
+	fprintf(stderr, "mui help %s: unknown help topic. Run 'mui help'.\n", argv[0]);
 	return 2;
 }
