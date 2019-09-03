@@ -1,7 +1,7 @@
 CC	=	gcc
 CFLAGS	=	-O2 -g -Wall
 
-OBJ	=	main.o cmd.o help.o
+OBJ	=	main.o frontend.o help.o
 
 all:	mui
 
