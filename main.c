@@ -44,19 +44,12 @@ register_all_commands(void) {
 	register_command(&cmd_input);
 }
 
-void
-register_all_frontends(void) {
-	register_frontend(&frontend_dumb);
-	/* register_frontend(&frontend_dumb); */
-}
-
 int
 main(int argc, char *argv[]) {
 	int i;
 	argc--; argv++;
 
 	register_all_commands();
-	register_all_frontends();
 	if (argc < 1 || !strcmp(argv[0], "help")) {
 		return help(argc-1, argv+1);
 	}
